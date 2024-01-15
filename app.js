@@ -18,6 +18,27 @@ app.get("/api/v1/movies", (req, resp) => {
   });
 });
 
+//GET REQUEST - /api/v1/movies/:id
+
+app.get("/api/v1/movies/:id", (req, resp) => {
+  let id = req.params.id * 1;
+  let movie = movies.find((el) => el.id == id);
+  if (!movie) {
+    return resp.status(400).json({
+      time: new Date().toLocaleString(),
+      status: "Failed",
+      massage: "Movie with ID " + id + " not found!",
+    });
+  }
+
+  resp.status(200).json({
+    status: "success",
+    data: {
+      movie: movie,
+    },
+  });
+});
+
 //POST REQUEST - /api/v1/movies
 app.post("/api/v1/movies", (req, resp) => {
   let newId = { id: movies[movies.length - 1].id + 1 };
