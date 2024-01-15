@@ -54,18 +54,7 @@ const addMovie = (req, resp) => {
   });
 };
 
-//GET REQUEST - /api/v1/movies
-app.get("/api/v1/movies", getAllMovie);
-
-//GET REQUEST - /api/v1/movies/:id
-
-app.get("/api/v1/movies/:id", getMovieById);
-
-//POST REQUEST - /api/v1/movies
-app.post("/api/v1/movies", addMovie);
-
-//PATCH REQUEST - /api/v1/movies/:id
-app.patch("/api/v1/movies/:id", (req, resp) => {
+const updateMovie = (req, resp) => {
   let id = req.params.id * 1;
   let movie = movies.find((el) => el.id == id);
   if (!movie) {
@@ -75,8 +64,8 @@ app.patch("/api/v1/movies/:id", (req, resp) => {
     });
   }
   let movieIndex = movies.indexOf(movie);
-  updatedMovie = Object.assign(movie, req.body);
-  movies[movieIndex] = updatedMovie;
+  Object.assign(movie, req.body);
+  movies[movieIndex] = movie;
   fs.writeFile("./data/movies.json", JSON.stringify(movies), (error) => {
     if (error) {
       return resp.status(500).json({
@@ -88,13 +77,12 @@ app.patch("/api/v1/movies/:id", (req, resp) => {
   resp.status(200).json({
     satus: "success",
     data: {
-      movie: updatedMovie,
+      movie: movie,
     },
   });
-});
+};
 
-//DELETE REQUEST - /api/v1/movies/:id
-app.delete("/api/v1/movies/:id", (req, resp) => {
+const deleteMovie = (req, resp) => {
   let id = req.params.id * 1;
   let movie = movies.find((el) => el.id == id);
 
@@ -123,9 +111,26 @@ app.delete("/api/v1/movies/:id", (req, resp) => {
       movie: null,
     },
   });
-});
+};
 
-//CREATE SERVER
+// app.get("/api/v1/movies", getAllMovie);
+
+// app.get("/api/v1/movies/:id", getMovieById);
+
+// app.post("/api/v1/movies", addMovie);
+
+// app.patch("/api/v1/movies/:id", updateMovie);
+
+// app.delete("/api/v1/movies/:id", deleteMovie);
+
+app.route("/api/v1/movies").get(getAllMovie).post(addMovie);
+
+app
+  .route("/api/v1/movies/:id")
+  .get(getMovieById)
+  .patch(updateMovie)
+  .delete(deleteMovie);
+
 app.listen(3000, () => {
   console.log("Server started on port 3000");
 });
