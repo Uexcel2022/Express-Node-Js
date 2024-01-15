@@ -1,0 +1,14 @@
+{
+  "name": "express-node-js",
+  "version": "1.0.0",
+  "description": "Learning express node js",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Uexcel",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
