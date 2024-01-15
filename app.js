@@ -3,8 +3,31 @@ const express = require("express");
 const app = express();
 const fs = require("fs");
 app.use(express.json());
-
 const movies = JSON.parse(fs.readFileSync("./data/movies.json"));
+
+let movieObject;
+
+function checkMovie(resp, id) {
+  let movie = movies.find((el) => el.id == id);
+  if (!movie) {
+    return resp.status(404).json({
+      status: "failed",
+      massage: "Movie with ID " + id + " was not found",
+    });
+  }
+
+  movieObject = movie;
+}
+
+function writeUpdate(resp, movies) {
+  fs.writeFile("./data/movies.json", JSON.stringify(movies), (error) => {
+    if (error) {
+      return resp.status(500).json({
+        status: "failed",
+      });
+    }
+  });
+}
 
 const getAllMovie = (req, resp) => {
   resp.status(200).json({
@@ -18,18 +41,11 @@ const getAllMovie = (req, resp) => {
 
 const getMovieById = (req, resp) => {
   let id = req.params.id * 1;
-  let movie = movies.find((el) => el.id == id);
-  if (!movie) {
-    return resp.status(400).json({
-      status: "failed",
-      massage: "Movie with ID " + id + " was not found.",
-    });
-  }
-
+  checkMovie(resp, id);
   resp.status(200).json({
     status: "success",
     data: {
-      movie: movie,
+      movie: movieObject,
     },
   });
 };
@@ -38,73 +54,36 @@ const addMovie = (req, resp) => {
   let newId = { id: movies[movies.length - 1].id + 1 };
   let newMovie = Object.assign(newId, req.body);
   movies.push(newMovie);
-  fs.writeFile("./data/movies.json", JSON.stringify(movies), (error) => {
-    if (error) {
-      resp.status(500).json({
-        status: "failed",
-      });
-    } else {
-      resp.status(201).json({
-        status: "success",
-        data: {
-          movie: newMovie,
-        },
-      });
-    }
+  writeUpdate(resp, movies);
+  resp.status(201).json({
+    status: "success",
+    data: {
+      movie: newMovie,
+    },
   });
 };
 
 const updateMovie = (req, resp) => {
   let id = req.params.id * 1;
-  let movie = movies.find((el) => el.id == id);
-  if (!movie) {
-    return resp.status(400).json({
-      status: "failed",
-      message: "Movie with ID " + id + " was not found.",
-    });
-  }
-  let movieIndex = movies.indexOf(movie);
-  Object.assign(movie, req.body);
-  movies[movieIndex] = movie;
-  fs.writeFile("./data/movies.json", JSON.stringify(movies), (error) => {
-    if (error) {
-      return resp.status(500).json({
-        status: "failed",
-      });
-    }
-  });
-
+  checkMovie(resp, id);
+  let movieIndex = movies.indexOf(movieObject);
+  Object.assign(movieObject, req.body);
+  movies[movieIndex] = movieObject;
+  writeUpdate(resp, movies);
   resp.status(200).json({
-    satus: "success",
+    status: "success",
     data: {
-      movie: movie,
+      movie: movieObject,
     },
   });
 };
 
 const deleteMovie = (req, resp) => {
   let id = req.params.id * 1;
-  let movie = movies.find((el) => el.id == id);
-
-  if (!movie) {
-    return resp.status(400).json({
-      satus: "failed",
-      message: "Movie with ID " + id + " was not found.",
-    });
-  }
-
-  let movieIndex = movies.indexOf(movie);
-
+  checkMovie(resp, id);
+  let movieIndex = movies.indexOf(movieObject);
   movies.splice(movieIndex, 1);
-
-  fs.writeFile("./data/movies.json", JSON.stringify(movies), (error) => {
-    if (error) {
-      return resp.status(500).json({
-        status: "failed",
-      });
-    }
-  });
-
+  writeUpdate(resp, movies);
   resp.status(204).json({
     satus: "success",
     data: {
