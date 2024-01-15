@@ -3,14 +3,21 @@ const express = require("express");
 const app = express();
 const fs = require("fs");
 app.use(express.json());
+app.use(dateLog);
 const movies = JSON.parse(fs.readFileSync("./data/movies.json"));
 
 let movieObject;
 
-function checkMovie(resp, id) {
+function dateLog(req, resp, next) {
+  req.date = new Date().toLocaleString();
+  next();
+}
+
+function checkMovie(req, resp, id) {
   let movie = movies.find((el) => el.id == id);
   if (!movie) {
     return resp.status(404).json({
+      date: req.date,
       status: "failed",
       massage: "Movie with ID " + id + " was not found",
     });
@@ -19,10 +26,11 @@ function checkMovie(resp, id) {
   movieObject = movie;
 }
 
-function writeUpdate(resp, movies) {
+function writeUpdate(req, resp, movies) {
   fs.writeFile("./data/movies.json", JSON.stringify(movies), (error) => {
     if (error) {
       return resp.status(500).json({
+        date: req.date,
         status: "failed",
       });
     }
@@ -31,6 +39,7 @@ function writeUpdate(resp, movies) {
 
 const getAllMovie = (req, resp) => {
   resp.status(200).json({
+    date: req.date,
     status: "success",
     count: movies.length,
     data: {
@@ -41,8 +50,9 @@ const getAllMovie = (req, resp) => {
 
 const getMovieById = (req, resp) => {
   let id = req.params.id * 1;
-  checkMovie(resp, id);
+  checkMovie(req, resp, id);
   resp.status(200).json({
+    date: req.date,
     status: "success",
     data: {
       movie: movieObject,
@@ -54,8 +64,9 @@ const addMovie = (req, resp) => {
   let newId = { id: movies[movies.length - 1].id + 1 };
   let newMovie = Object.assign(newId, req.body);
   movies.push(newMovie);
-  writeUpdate(resp, movies);
+  writeUpdate(req, resp, movies);
   resp.status(201).json({
+    date: req.date,
     status: "success",
     data: {
       movie: newMovie,
@@ -65,12 +76,13 @@ const addMovie = (req, resp) => {
 
 const updateMovie = (req, resp) => {
   let id = req.params.id * 1;
-  checkMovie(resp, id);
+  checkMovie(req, resp, id);
   let movieIndex = movies.indexOf(movieObject);
   Object.assign(movieObject, req.body);
   movies[movieIndex] = movieObject;
-  writeUpdate(resp, movies);
+  writeUpdate(req, resp, movies);
   resp.status(200).json({
+    date: req.date,
     status: "success",
     data: {
       movie: movieObject,
@@ -80,10 +92,10 @@ const updateMovie = (req, resp) => {
 
 const deleteMovie = (req, resp) => {
   let id = req.params.id * 1;
-  checkMovie(resp, id);
+  checkMovie(req, resp, id);
   let movieIndex = movies.indexOf(movieObject);
   movies.splice(movieIndex, 1);
-  writeUpdate(resp, movies);
+  writeUpdate(req, resp, movies);
   resp.status(204).json({
     satus: "success",
     data: {
