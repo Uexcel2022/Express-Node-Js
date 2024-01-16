@@ -2,11 +2,15 @@
 const express = require("express");
 const app = express();
 const fs = require("fs");
-app.use(express.json());
-app.use(dateLog);
+const morgan = require("morgan");
+
 const movies = JSON.parse(fs.readFileSync("./data/movies.json"));
 
+app.use(express.json());
+app.use(dateLog);
+app.use(morgan("dev"));
 let movieObject;
+let writeError;
 
 function dateLog(req, resp, next) {
   req.date = new Date().toLocaleString();
@@ -16,6 +20,7 @@ function dateLog(req, resp, next) {
 function checkMovie(req, resp, id) {
   let movie = movies.find((el) => el.id == id);
   if (!movie) {
+    movieObject = 0;
     return resp.status(404).json({
       date: req.date,
       status: "failed",
@@ -29,9 +34,11 @@ function checkMovie(req, resp, id) {
 function writeUpdate(req, resp, movies) {
   fs.writeFile("./data/movies.json", JSON.stringify(movies), (error) => {
     if (error) {
+      writeError = 1;
       return resp.status(500).json({
         date: req.date,
         status: "failed",
+        massage: "something went wrong!!!!",
       });
     }
   });
@@ -51,13 +58,15 @@ const getAllMovie = (req, resp) => {
 const getMovieById = (req, resp) => {
   let id = req.params.id * 1;
   checkMovie(req, resp, id);
-  resp.status(200).json({
-    date: req.date,
-    status: "success",
-    data: {
-      movie: movieObject,
-    },
-  });
+  if (movieObject != 0) {
+    resp.status(200).json({
+      date: req.date,
+      status: "success",
+      data: {
+        movie: movieObject,
+      },
+    });
+  }
 };
 
 const addMovie = (req, resp) => {
@@ -65,43 +74,53 @@ const addMovie = (req, resp) => {
   let newMovie = Object.assign(newId, req.body);
   movies.push(newMovie);
   writeUpdate(req, resp, movies);
-  resp.status(201).json({
-    date: req.date,
-    status: "success",
-    data: {
-      movie: newMovie,
-    },
-  });
+  if (writeError != 1) {
+    resp.status(201).json({
+      date: req.date,
+      status: "success",
+      data: {
+        movie: newMovie,
+      },
+    });
+  }
 };
 
 const updateMovie = (req, resp) => {
   let id = req.params.id * 1;
   checkMovie(req, resp, id);
-  let movieIndex = movies.indexOf(movieObject);
-  Object.assign(movieObject, req.body);
-  movies[movieIndex] = movieObject;
-  writeUpdate(req, resp, movies);
-  resp.status(200).json({
-    date: req.date,
-    status: "success",
-    data: {
-      movie: movieObject,
-    },
-  });
+  if (movieObject != 0) {
+    let movieIndex = movies.indexOf(movieObject);
+    Object.assign(movieObject, req.body);
+    movies[movieIndex] = movieObject;
+    writeUpdate(req, resp, movies);
+    if (writeError != 1) {
+      resp.status(200).json({
+        date: req.date,
+        status: "success",
+        data: {
+          movie: movieObject,
+        },
+      });
+    }
+  }
 };
 
 const deleteMovie = (req, resp) => {
   let id = req.params.id * 1;
   checkMovie(req, resp, id);
-  let movieIndex = movies.indexOf(movieObject);
-  movies.splice(movieIndex, 1);
-  writeUpdate(req, resp, movies);
-  resp.status(204).json({
-    satus: "success",
-    data: {
-      movie: null,
-    },
-  });
+  if (movieObject != 0) {
+    let movieIndex = movies.indexOf(movieObject);
+    movies.splice(movieIndex, 1);
+    writeUpdate(req, resp, movies);
+    if (writeError != 1) {
+      resp.status(204).json({
+        satus: "success",
+        data: {
+          movie: null,
+        },
+      });
+    }
+  }
 };
 
 // app.get("/api/v1/movies", getAllMovie);
