@@ -123,6 +123,8 @@ const deleteMovie = (req, resp) => {
   }
 };
 
+//FIRST WAY
+
 // app.get("/api/v1/movies", getAllMovie);
 
 // app.get("/api/v1/movies/:id", getMovieById);
@@ -133,13 +135,28 @@ const deleteMovie = (req, resp) => {
 
 // app.delete("/api/v1/movies/:id", deleteMovie);
 
-app.route("/api/v1/movies").get(getAllMovie).post(addMovie);
+//SECOND WAY
 
-app
-  .route("/api/v1/movies/:id")
+// app.route("/api/v1/movies").get(getAllMovie).post(addMovie);
+
+// app
+//   .route("/api/v1/movies/:id")
+//   .get(getMovieById)
+//   .patch(updateMovie)
+//   .delete(deleteMovie);
+
+//THIRD WAY
+
+const moviesRouter = express.Router();
+moviesRouter
+  .route("/:id")
   .get(getMovieById)
   .patch(updateMovie)
   .delete(deleteMovie);
+
+moviesRouter.route("/").get(getAllMovie).post(addMovie);
+
+app.use("/api/v1/movies", moviesRouter);
 
 app.listen(3000, () => {
   console.log("Server started on port 3000");
