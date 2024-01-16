@@ -3,6 +3,17 @@ const movies = JSON.parse(fs.readFileSync("./data/movies.json"));
 let movieObject;
 let writeError;
 
+exports.validateRequestBody = (req, resp, next) => {
+  if (!req.body.name || !req.body.releasedYear) {
+    return resp.status(400).json({
+      date: req.date,
+      status: "failed",
+      message: "Movie name and realeased year are required.",
+    });
+  }
+  next();
+};
+
 exports.validExistance = (req, resp, next, value) => {
   movieObject = movies.find((el) => el.id == value * 1);
   if (!movieObject) {

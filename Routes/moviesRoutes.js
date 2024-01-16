@@ -36,6 +36,6 @@ router
 router
   .route("/")
   .get(moviesController.getAllMovie)
-  .post(moviesController.addMovie);
+  .post(moviesController.validateRequestBody, moviesController.addMovie);
 
 module.exports = router;

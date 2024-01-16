@@ -11,6 +11,7 @@ function dateLog(req, resp, next) {
 
 app.use(express.json());
 app.use(dateLog);
+app.use(express.static("./public"));
 app.use(morgan("dev"));
 
 app.use("/api/v1/movies", moviesRouter);

@@ -1,0 +1,15 @@
+body{
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+h2{
+    color: rgb(165, 121, 60);
+}
+
+.head{
+    text-align: center;
+    margin: 50px 200px;
+    border-radius: 5px;
+    border: solid whitesmoke;
+    box-shadow: 0 4px 8px rgb(0, 0,0, 0.2),0 6px 20px 0 rgb(0, 0, 0,0.19) ;
+}
