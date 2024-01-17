@@ -9,10 +9,12 @@ function dateLog(req, resp, next) {
   next();
 }
 
+if (process.env.NODE_ENV == "development") {
+  app.use(morgan("dev"));
+}
 app.use(express.json());
 app.use(dateLog);
 app.use(express.static("./public"));
-app.use(morgan("dev"));
 
 app.use("/api/v1/movies", moviesRouter);
 
