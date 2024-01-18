@@ -1,5 +1,5 @@
 const express = require("express");
-const moviesController = require("./Controllers/moviesController");
+const moviesController = require("./../Controllers/moviesController");
 
 //FIRST WAY
 
@@ -36,6 +36,6 @@ router
 router
   .route("/")
   .get(moviesController.getAllMovie)
-  .post(moviesController.validateRequestBody, moviesController.addMovie);
+  .post(moviesController.addMovie);
 
 module.exports = router;
