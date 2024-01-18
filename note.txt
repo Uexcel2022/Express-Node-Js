@@ -53,3 +53,6 @@ SERVING STATIC FILES
       install dotenv code fomatter
       npm install dotenv to read envs and set them on Nodejs process
 
+leant mongodb
+
+learnt how to use atlas from mongodb
