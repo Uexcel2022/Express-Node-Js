@@ -25,7 +25,7 @@ const moviesController = require("./../Controllers/moviesController");
 
 //THIRD WAY
 const router = express.Router();
-router.param("id", moviesController.validExistance);
+// router.param("id", moviesController.validExistance);
 
 router
   .route("/:id")

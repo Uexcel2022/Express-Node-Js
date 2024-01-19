@@ -1,4 +1,12 @@
 Express js
+
+200 = ok => get patch/put http method
+201 = created new object
+204 = delete
+400 = bad request
+404 = not found
+500 = internal server error
+
 1 imported exress js
 
 2 created api for crud operation
@@ -16,12 +24,11 @@ MIDDLEWARE  FUNCTIONS
 
     Create module for the new router and use it in our app
 
-    Orgaring the project into different package/file.
+    Orgaring the project into different packages/file.
     -server.js
     -app.js
     -routes package/file
     -controller package/file
-
 
     server - need app - obj of express js to be imported
 
@@ -56,3 +63,26 @@ SERVING STATIC FILES
 leant mongodb
 
 learnt how to use atlas from mongodb
+
+connected to mongodb online data base
+
+implemented MVC partern in the project
+
+implemented crud operations in the online Database
+
+Check mongoose documentation 
+
+implemented module for deleting and importing movies to mongodb.
+
+FILTERIG RESULT SET
+
+query string: req.query.[query string name] is use to get query string value and req.params.[params name] value
+filterby less than (lt) or greater than (gt) or sort by less than lt or equal to (lte) or greater than (gte) 
+wering as e ...?price[gt/gte/lt/lte]=30
+
+Sortby column writen as eg ?sort=price , sort=price,ratings 
+
+limiting fields
+
+
+

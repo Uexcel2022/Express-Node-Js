@@ -1,1 +1,45 @@
-[{"id":1,"name":"Die Hard 4","releasedYear":2019,"duration":"90mins"},{"id":2,"name":"Enchanted","releasedYear":2018,"duration":"90mins"},{"id":3,"name":"Guns","releasedYear":2001,"duration":"90mins"},{"id":4,"name":"Legend","releasedYear":2020,"duration":"120mins"},{"id":5,"name":"Wonder Woman","releasedYear":2012,"duration":"90mins"},{"id":6,"name":"Applo 13","releasedYear":2016,"duration":"120mins"},{"id":7,"name":"Matrix","releasedYear":2015,"duration":"120mins"},{"id":8,"name":"Terminator4","releasedYear":2020,"duration":"120mins"},{"id":9,"name":"Terminator 4","releasedYear":2020,"duration":"120mins"},{"id":10,"name":"Home Alone 2","releasedYear":1999,"duration":"120mins"},{"id":11,"name":"Home Alone 4","releasedYear":2002,"duration":"120mins"},{"id":12,"name":"Home Alone 5","releasedYear":2006,"duration":"120mins"},{"id":13,"name":"Home Alone 4","releasedYear":2004,"duration":"120mins"},{"id":14,"name":"Home Alone 5","releasedYear":2004,"duration":"120mins"},{"id":15,"name":"Home Alone 8","releasedYear":2004,"duration":"120mins"},{"id":16,"name":"Home Alone 1","releasedYear":2004,"duration":"120mins"},{"id":17,"name":"Ijele 1","releasedYear":2020,"duration":"90mins"},{"id":18,"name":"Ijele 2","releasedYear":2021,"duration":"90mins"}]
+[{
+    "name": "Riddick",
+    "description": "Left for dead on a sun-scorched planet, Riddick finds himself up against an alien race of predators. Activating an emergency beacon alerts two ships: one carrying a new breed of mercenary, the other captained by a man from Riddick's past.",
+    "duration": 119,
+    "ratings": 6.8,
+    "totalRating": 329,
+    "releasedYear":2013,
+    "releasedDate": "2013-09-04T00:00:00Z",
+    "genres": ["Action","Sci-Fi","Thriller"],
+    "directors": ["David Twohy"],
+    "coverImage":"Riddick-2013.jpg",
+    "actors":["Vin Diesel","Karl Urban","Katee Sackhoff"],
+    "price":50
+},
+{
+    "name": "Enchanted",
+    "description": "On the day that supposed to be the day of joy and happiness, she find herself in unknow planet unexpectedly in dramatic situtation occastrated by her mother inlaw where the journey to a live of happily ever after began.",
+    "duration": 119,
+    "ratings": 7.8,
+    "totalRating": 329,
+    "releasedYear":2018,
+    "releasedDate": "2013-09-04T00:00:00Z",
+    "genres": ["Action","Fantacy","Thriller","Comedy"],
+    "directors": ["David Twohy"],
+    "coverImage":"enchanted-2018.jpg",
+    "actors":["xxx","xxx","xxx"],
+    "price":50
+},
+
+{
+    "name": "Home Alone",
+    "description": "He was left alone in the house during christmass time, home was invaded by dangerous men but he survived by his ingenuity",
+    "duration": 119,
+    "ratings": 6.5,
+    "totalRating": 329,
+    "releasedYear":1991,
+    "releasedDate": "2013-09-04T00:00:00Z",
+    "genres": ["Action","Comedy","Thriller"],
+    "directors": ["David Twohy"],
+    "coverImage":"homeAlone-1991.jpg",
+    "actors":["xxx","xxx","xxx"],
+    "price":50
+}
+
+]
