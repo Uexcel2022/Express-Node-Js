@@ -5,6 +5,7 @@ const movieSchema = new mongoose.Schema({
     type: String,
     required: [true, "Name is required field!"],
     unique: true,
+<<<<<<< HEAD
     trim: true,
   },
 
@@ -13,12 +14,19 @@ const movieSchema = new mongoose.Schema({
     required: [true, "Description is required field!"],
     trim: true,
   },
+=======
+  },
+
+  description: String,
+
+>>>>>>> 91836b4058d77c0b552ba2971a7132e12773c909
   duration: {
     type: Number,
     required: [true, "Duration is required field!"],
   },
   ratings: {
     type: Number,
+<<<<<<< HEAD
   },
   totalRating: {
     type: Number,
@@ -54,6 +62,9 @@ const movieSchema = new mongoose.Schema({
   price: {
     type: Number,
     required: [true, "Price is required field!"],
+=======
+    default: 1.0,
+>>>>>>> 91836b4058d77c0b552ba2971a7132e12773c909
   },
 });
 
