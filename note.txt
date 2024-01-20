@@ -82,7 +82,11 @@ wering as e ...?price[gt/gte/lt/lte]=30
 
 Sortby column writen as eg ?sort=price , sort=price,ratings 
 
-limiting fields
+limiting fields written as ...?fields=name,ratings,price.
+To exclude a field preceed it with - sign. eg ...?fields=-name,-ratings,-price,-releasedYear
+To exclude a field in the schema on the property add: select: false
+
+implemented paging
 
 
 
