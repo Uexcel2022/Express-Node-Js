@@ -25,7 +25,13 @@ const moviesController = require("./../Controllers/moviesController");
 
 //THIRD WAY
 const router = express.Router();
+//Middleware function
 // router.param("id", moviesController.validExistance);
+
+router
+  .route("/5_top_rated_movies")
+  //getTopFiveRatedMovies - middleware function
+  .get(moviesController.topFiveRatedMovies, moviesController.getAllMovie);
 
 router
   .route("/:id")

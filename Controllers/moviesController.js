@@ -1,7 +1,14 @@
 const Movie = require("./../Models/movieModel");
+const ApiFeatures = require("../Utils/ApiFeatures");
+
+//Query Alaising route
+exports.topFiveRatedMovies = (req, resp, next) => {
+  (req.query.limit = "5"), (req.query.sort = "-ratings");
+  next();
+};
 
 function positiveResponse(req, resp, movieObj, respCode) {
-  if (movieObj.length == 1) {
+  if (movieObj != null && movieObj.length == 1) {
     resp.status(respCode).json({
       date: req.date,
       status: "succesful",
@@ -11,7 +18,7 @@ function positiveResponse(req, resp, movieObj, respCode) {
     });
   }
 
-  if (movieObj.length > 1) {
+  if (movieObj != null && movieObj.length > 1) {
     resp.status(respCode).json({
       date: req.date,
       status: "succesful",
@@ -33,60 +40,17 @@ function errorResponse(req, resp, error, respCode) {
 
 exports.getAllMovie = async (req, resp) => {
   try {
-    //REMOVING QUERY STRINGS THAT ARE FIELDS
+    const count = await Movie.countDocuments();
 
-    let exclusion = ["sort", "page", "limit", "fields"];
-    let stringQuery = { ...req.query };
-    exclusion.forEach((el) => {
-      delete stringQuery[el];
-    });
+    const apiFeatures = new ApiFeatures(Movie.find(), req.query, count)
+      .sortUrl()
+      .sortResultSet()
+      .limitByFileds()
+      .paginate();
 
-    // let stringQuery = req.query;
+    const movies = await apiFeatures.query;
 
-    //ADDING $ TO <= >= <>  TO MEET MONGOOSE SPECIFICATION
-
-    let strQuery = JSON.stringify(stringQuery);
-
-    const stringQueryObj = JSON.parse(
-      strQuery.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`)
-    );
-
-    let query = Movie.find(stringQueryObj);
-
-    //SORTING LOGIC
-    if (req.query.sort) {
-      const sortBy = req.query.sort.split(",").join(" ");
-      query = query.sort(sortBy);
-    } else {
-      query = query.sort("-createdAt");
-    }
-
-    //FIELDS FIELDS LOGIC
-    if (req.query.fields) {
-      const fields = req.query.fields.split(",").join(" ");
-      query = query.select(fields);
-    } else {
-      query = query.select("-__v"); //to exclude __v default mongodb fieldcls
-    }
-
-    //PAGING
-
-    if (req.query.page) {
-      let page = req.query.page * 1 || 1;
-      let limit = req.query.limit * 1 || 10;
-
-      const count = await Movie.countDocuments();
-      const skip = (page - 1) * limit;
-      query = query.skip(skip).limit(limit);
-
-      if (skip >= count) {
-        throw new Error("This page is not found");
-      }
-    }
-
-    const movies = await query;
-
-    if (movies.length < 1) {
+    if (movies == null || movies.length < 1) {
       throw new Error("No movie found!!!");
     }
 
