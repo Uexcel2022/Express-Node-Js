@@ -132,3 +132,29 @@ exports.getMovieStats = async (req, resp) => {
     errorResponse(req, resp, error, 404);
   }
 };
+
+exports.getMovieByGenre = async (req, resp) => {
+  const reqGenre = req.params.genre;
+
+  try {
+    const movies = await Movie.aggregate([
+      { $unwind: "$genres" },
+      {
+        $group: {
+          _id: "$genres",
+          movieCount: { $sum: 1 },
+          movies: { $push: "$name" },
+        },
+      },
+      { $addFields: { gengre: "$_id" } }, //add field and asign the value of another field
+      { $project: { _id: 0 } }, // use to remove a field from the result set
+      { $sort: { movieCount: -1 } },
+      // { $limit: 5 }, // to limit result
+      { $match: { gengre: reqGenre } },
+    ]);
+
+    positiveResponse(req, resp, movies, 200);
+  } catch (error) {
+    errorResponse(req, resp, error, 404);
+  }
+};

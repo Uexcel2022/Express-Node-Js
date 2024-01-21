@@ -30,6 +30,8 @@ const router = express.Router();
 
 router.route("/stats").get(moviesController.getMovieStats);
 
+router.route("/genres/:genre").get(moviesController.getMovieByGenre);
+
 router
   .route("/five-top-rated-movies")
   //getTopFiveRatedMovies - middleware function
