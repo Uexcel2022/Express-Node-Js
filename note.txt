@@ -166,4 +166,7 @@ implemented Aggregation
       { $sort: { minPrice: -1 } }, //1 asc,-1 desc
       { $match: { maxPrice: { $gte: 60 } } }, //repeated stage
 
+implemented virtual properties to the schema.
 
+Further lecture on mongoose middlewares -pre/post hook ... middleware is a function use to execute logics btw to events
+we can call pre or post method on schema,

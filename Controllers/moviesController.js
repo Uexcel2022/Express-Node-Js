@@ -7,26 +7,32 @@ exports.topFiveRatedMovies = (req, resp, next) => {
   next();
 };
 
-function positiveResponse(req, resp, movieObj, respCode) {
-  if (movieObj != null && movieObj.length > 1) {
-    resp.status(respCode).json({
-      date: req.date,
-      status: "succesful",
-      count: movieObj.length,
-      data: {
-        movies: movieObj,
-      },
-    });
-  }
+async function positiveResponse(req, resp, movieObj, respCode) {
+  try {
+    if (movieObj != null && movieObj.length > 1) {
+      resp.status(respCode).json({
+        date: req.date,
+        status: "succesful",
+        count: movieObj.length,
+        data: {
+          movies: movieObj,
+        },
+      });
+    }
 
-  if (movieObj != null && movieObj.length == 1) {
-    resp.status(respCode).json({
-      date: req.date,
-      status: "succesful",
-      data: {
-        movie: movieObj,
-      },
-    });
+    if (movieObj != null && !movieObj.length) {
+      resp.status(respCode).json({
+        date: req.date,
+        status: "succesful",
+        data: {
+          movie: movieObj,
+        },
+      });
+    } else {
+      throw new Error("No Movie Found!");
+    }
+  } catch (error) {
+    errorResponse(req, resp, error, 404);
   }
 }
 
@@ -53,7 +59,6 @@ exports.getAllMovie = async (req, resp) => {
     if (movies == null || movies.length < 1) {
       throw new Error("No movie found!!!");
     }
-
     positiveResponse(req, resp, movies, 200);
   } catch (error) {
     errorResponse(req, resp, error, 404);
@@ -62,7 +67,7 @@ exports.getAllMovie = async (req, resp) => {
 
 exports.getMovieById = async (req, resp) => {
   try {
-    const movie = await Movie.findById(req.params.id);
+    const movie = await Movie.findById(req.params.id).select("-__v");
     positiveResponse(req, resp, movie, 200);
   } catch (error) {
     message = { message: "Movie with ID: " + req.params.id + " is not found!" };
@@ -72,7 +77,8 @@ exports.getMovieById = async (req, resp) => {
 
 exports.addMovie = async (req, resp) => {
   try {
-    const movie = await Movie.create(req.body);
+    let movie = await Movie.create(req.body);
+    movie = await Movie.findOne(movie._id).select("-__v");
     positiveResponse(req, resp, movie, 201);
   } catch (error) {
     errorResponse(req, resp, error, 400);
