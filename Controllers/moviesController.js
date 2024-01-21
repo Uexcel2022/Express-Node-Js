@@ -112,17 +112,19 @@ exports.getMovieStats = async (req, resp) => {
       { $match: { ratings: { $gte: 6 } } },
       {
         $group: {
-          _id: "$releasedYear", // grouping parameter
-          avgRating: { $avg: "$ratings" },
+          _id: "$releasedYear",
+          avgRatings: { $avg: "$ratings" },
+          minRatings: { $min: "$ratings" },
+          maxRating: { $max: "$ratings" },
           avgPrice: { $avg: "$price" },
           minPrice: { $min: "$price" },
           maxPrice: { $max: "$price" },
           totalPrice: { $sum: "$price" },
-          movieCount: { $sum: 1 },
+          moviesCount: { $sum: 1 },
         },
       },
-      { $sort: { minPrice: -1 } }, //1 asc,-1 desc
-      { $match: { maxPrice: { $gte: 60 } } }, //repeated stage
+      { $sort: { avgRatings: -1 } }, //1 asc,-1 desc
+      { $match: { avgRatings: { $gte: 8 } } },
     ]);
 
     positiveResponse(req, resp, stats, 200);
