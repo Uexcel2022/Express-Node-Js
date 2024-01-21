@@ -8,16 +8,6 @@ exports.topFiveRatedMovies = (req, resp, next) => {
 };
 
 function positiveResponse(req, resp, movieObj, respCode) {
-  if (movieObj != null && movieObj.length == 1) {
-    resp.status(respCode).json({
-      date: req.date,
-      status: "succesful",
-      data: {
-        movie: movieObj,
-      },
-    });
-  }
-
   if (movieObj != null && movieObj.length > 1) {
     resp.status(respCode).json({
       date: req.date,
@@ -25,6 +15,16 @@ function positiveResponse(req, resp, movieObj, respCode) {
       count: movieObj.length,
       data: {
         movies: movieObj,
+      },
+    });
+  }
+
+  if (movieObj != null && movieObj.length == 1) {
+    resp.status(respCode).json({
+      date: req.date,
+      status: "succesful",
+      data: {
+        movie: movieObj,
       },
     });
   }
@@ -103,5 +103,30 @@ exports.deleteMovie = async (req, resp) => {
       message: "Movie with ID: " + req.params.id + " is not found!",
     };
     errorResponse(req, resp, message, 404);
+  }
+};
+
+exports.getMovieStats = async (req, resp) => {
+  try {
+    const stats = await Movie.aggregate([
+      { $match: { ratings: { $gte: 6 } } },
+      {
+        $group: {
+          _id: "$releasedYear", // grouping parameter
+          avgRating: { $avg: "$ratings" },
+          avgPrice: { $avg: "$price" },
+          minPrice: { $min: "$price" },
+          maxPrice: { $max: "$price" },
+          totalPrice: { $sum: "$price" },
+          movieCount: { $sum: 1 },
+        },
+      },
+      { $sort: { minPrice: -1 } }, //1 asc,-1 desc
+      { $match: { maxPrice: { $gte: 60 } } }, //repeated stage
+    ]);
+
+    positiveResponse(req, resp, stats, 200);
+  } catch (error) {
+    errorResponse(req, resp, error, 404);
   }
 };

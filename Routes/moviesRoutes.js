@@ -28,8 +28,10 @@ const router = express.Router();
 //Middleware function
 // router.param("id", moviesController.validExistance);
 
+router.route("/stats").get(moviesController.getMovieStats);
+
 router
-  .route("/5_top_rated_movies")
+  .route("/five-top-rated-movies")
   //getTopFiveRatedMovies - middleware function
   .get(moviesController.topFiveRatedMovies, moviesController.getAllMovie);
 
