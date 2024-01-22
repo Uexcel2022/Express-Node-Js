@@ -7,6 +7,12 @@ Express js
 404 = not found
 500 = internal server error
 
+Dependences
+  -dotenv - to read and include .env file in evn variables
+  -mongoose - for Database operation
+  -morgan - for logig
+  -Validator.js - for validation
+
 1 imported exress js
 
 2 created api for crud operation
@@ -29,6 +35,7 @@ MIDDLEWARE  FUNCTIONS
     -app.js
     -routes package/file
     -controller package/file
+    -apiFeatures
 
     server - need app - obj of express js to be imported
 
@@ -170,3 +177,21 @@ implemented virtual properties to the schema.
 
 Further lecture on mongoose middlewares -pre/post hook ... middleware is a function use to execute logics btw to events
 we can call pre or post method on schema,
+  implemented mongoose middleware on the Database schema
+  -save event middleware
+  -find event middleware
+  -aggrate middleware
+
+
+Schema Data Validators
+  -required
+  -max/minlength - string value
+  -max/min - integer value
+  -enum for arrays
+  -cust Validator
+  -api - Validator.js
+
+
+
+
+

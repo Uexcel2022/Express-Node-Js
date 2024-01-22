@@ -37,7 +37,7 @@ class ApiFeatures {
       const fields = this.queryStr.fields.split(",").join(" ");
       this.query.select(fields);
     } else {
-      this.query.select("-__v"); //to exclude __v default mongodb fieldcls
+      // this.query.select("-__v"); //to exclude __v default mongodb fieldcls
     }
 
     return this;
