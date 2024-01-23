@@ -1,5 +1,7 @@
 const Movie = require("./../Models/movieModel");
 const ApiFeatures = require("../Utils/ApiFeatures");
+const asyncErrorHandler = require("./../Utils/AsyncErrorHandler");
+const CustomError = require("./../Utils/CustomError");
 
 //Query Alaising route
 exports.topFiveRatedMovies = (req, resp, next) => {
@@ -7,190 +9,159 @@ exports.topFiveRatedMovies = (req, resp, next) => {
   next();
 };
 
-exports.getAllMovie = async (req, resp) => {
-  try {
-    const count = await Movie.countDocuments();
-
-    const apiFeatures = new ApiFeatures(Movie.find(), req.query, count)
-      .sortUrl()
-      .sortResultSet()
-      .limitByFileds()
-      .paginate();
-
-    const movies = await apiFeatures.query;
-
-    if (movies == null || movies.length < 1) {
-      throw new Error("No movie found!!!");
-    }
-    resp.status(200).json({
-      date: req.date,
-      status: "succesful",
-      count: movies.length,
-      data: {
-        movies,
-      },
-    });
-  } catch (error) {
-    resp.status(404).json({
-      date: req.date,
-      status: "fail",
-      message: error.message,
-    });
+function requestResponse(req, resp, movie, next) {
+  if (JSON.stringify(movie) == "[]" || !movie) {
+    const customError = new CustomError("Not Found", 404);
+    return next(customError);
   }
-};
 
-exports.getMovieById = async (req, resp) => {
-  try {
-    const movie = await Movie.findById(req.params.id); //.select("-__v");
+  if (movie != null && !movie.length) {
     resp.status(200).json({
-      date: req.date,
-      status: "succesful",
+      status: "success",
       data: {
         movie,
       },
     });
-  } catch (error) {
-    message = { message: "Movie with ID: " + req.params.id + " is not found!" };
-    resp.status(404).json({
-      date: req.date,
-      status: "fail",
-      message: error.message,
-    });
   }
-};
 
-exports.addMovie = async (req, resp) => {
-  try {
-    let movie = await Movie.create(req.body);
-    movie = await Movie.findOne(movie._id); //.select("-__v");
-    resp.status(201).json({
-      date: req.date,
-      status: "succesful",
-      data: {
-        movie,
-      },
-    });
-  } catch (error) {
-    resp.status(404).json({
-      date: req.date,
-      status: "fail",
-      message: error.message,
-    });
-  }
-};
-
-exports.updateMovie = async (req, resp) => {
-  try {
-    const movie = await Movie.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+  if (movie != null && movie.length) {
     resp.status(200).json({
-      date: req.date,
-      status: "succesful",
+      status: "succes",
       data: {
-        movie,
+        movies: movie,
       },
     });
-  } catch (error) {
-    resp.status(404).json({
-      date: req.date,
-      status: "fail",
-      message: error.message,
-    });
   }
-};
+}
 
-exports.deleteMovie = async (req, resp) => {
-  try {
-    await Movie.findByIdAndDelete(req.params.id);
-    resp.status(204).json({
-      status: "successful",
-      data: null,
-    });
-  } catch (error) {
-    message = {
-      message: "Movie with ID: " + req.params.id + " is not found!",
-    };
-    resp.status(404).json({
-      date: req.date,
-      status: "fail",
-      message: error.message,
-    });
+exports.getAllMovie = asyncErrorHandler(async (req, resp, next) => {
+  const count = await Movie.countDocuments();
+
+  const apiFeatures = new ApiFeatures(Movie.find(), req.query, count)
+    .sortUrl()
+    .sortResultSet()
+    .limitByFileds()
+    .paginate();
+
+  const movies = await apiFeatures.query;
+  requestResponse(req, resp, movies, next);
+  // resp.status(200).json({
+  //   date: req.date,
+  //   status: "succesful",
+  //   count: movies.length,
+  //   data: {
+  //     movies,
+  //   },
+  // });
+});
+
+exports.getMovieById = asyncErrorHandler(async (req, resp, next) => {
+  const movie = await Movie.findById(req.params.id); //.select("-__v");
+  requestResponse(req, resp, movie, next);
+  // resp.status(200).json({
+  //   date: req.date,
+  //   status: "succesful",
+  //   data: {
+  //     movie,
+  //   },
+  // });
+});
+
+exports.addMovie = asyncErrorHandler(async (req, resp, next) => {
+  let movie = await Movie.create(req.body);
+  movie = await Movie.findOne(movie._id); //.select("-__v");
+  requestResponse(req, resp, movie, next);
+  // resp.status(201).json({
+  //   date: req.date,
+  //   status: "succesful",
+  //   data: {
+  //     movie,
+  //   },
+  // });
+});
+
+exports.updateMovie = asyncErrorHandler(async (req, resp, next) => {
+  const movie = await Movie.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
+  requestResponse(req, resp, movie, next);
+  // resp.status(200).json({
+  //   date: req.date,
+  //   status: "succesful",
+  //   data: {
+  //     movie,
+  //   },
+  // });
+});
+
+exports.deleteMovie = asyncErrorHandler(async (req, resp, next) => {
+  const deletedMovie = await Movie.findByIdAndDelete(req.params.id);
+  if (!deletedMovie) {
+    return requestResponse(req, resp, deletedMovie, next);
   }
-};
+  resp.status(204).json({
+    status: "successful",
+    data: null,
+  });
+});
 
-exports.getMovieStats = async (req, resp) => {
-  try {
-    const stats = await Movie.aggregate([
-      { $match: { ratings: { $gte: 6 } } },
-      {
-        $group: {
-          _id: "$releasedYear",
-          avgRatings: { $avg: "$ratings" },
-          minRatings: { $min: "$ratings" },
-          maxRating: { $max: "$ratings" },
-          avgPrice: { $avg: "$price" },
-          minPrice: { $min: "$price" },
-          maxPrice: { $max: "$price" },
-          totalPrice: { $sum: "$price" },
-          moviesCount: { $sum: 1 },
-        },
+exports.getMovieStats = asyncErrorHandler(async (req, resp, next) => {
+  const stats = await Movie.aggregate([
+    { $match: { ratings: { $gte: 6 } } },
+    {
+      $group: {
+        _id: "$releasedYear",
+        avgRatings: { $avg: "$ratings" },
+        minRatings: { $min: "$ratings" },
+        maxRating: { $max: "$ratings" },
+        avgPrice: { $avg: "$price" },
+        minPrice: { $min: "$price" },
+        maxPrice: { $max: "$price" },
+        totalPrice: { $sum: "$price" },
+        moviesCount: { $sum: 1 },
       },
-      { $sort: { avgRatings: -1 } }, //1 asc,-1 desc
-      { $match: { avgRatings: { $gte: 8 } } },
-    ]);
+    },
+    { $sort: { avgRatings: -1 } }, //1 asc,-1 desc
+    { $match: { avgRatings: { $gte: 8 } } },
+  ]);
+  requestResponse(req, resp, stats, next);
+  // resp.status(200).json({
+  //   date: req.date,
+  //   status: "succesful",
+  //   count: stats.length,
+  //   data: {
+  //     movie: stats,
+  //   },
+  // });
+});
 
-    resp.status(200).json({
-      date: req.date,
-      status: "succesful",
-      count: stats.length,
-      data: {
-        movie: stats,
-      },
-    });
-  } catch (error) {
-    resp.status(404).json({
-      date: req.date,
-      status: "fail",
-      message: error.message,
-    });
-  }
-};
-
-exports.getMovieByGenre = async (req, resp) => {
+exports.getMovieByGenre = asyncErrorHandler(async (req, resp, next) => {
   const reqGenre = req.params.genre;
 
-  try {
-    const movies = await Movie.aggregate([
-      { $unwind: "$genres" },
-      {
-        $group: {
-          _id: "$genres",
-          movieCount: { $sum: 1 },
-          movies: { $push: "$name" },
-        },
+  // try {
+  const movies = await Movie.aggregate([
+    { $unwind: "$genres" },
+    {
+      $group: {
+        _id: "$genres",
+        movieCount: { $sum: 1 },
+        movies: { $push: "$name" },
       },
-      { $addFields: { gengre: "$_id" } }, //add field and asign the value of another field
-      { $project: { _id: 0 } }, // use to remove a field from the result set
-      { $sort: { movieCount: -1 } },
-      // { $limit: 5 }, // to limit result
-      { $match: { gengre: reqGenre } },
-    ]);
-
-    resp.status(200).json({
-      date: req.date,
-      status: "succesful",
-      count: movies.length,
-      data: {
-        movies,
-      },
-    });
-  } catch (error) {
-    resp.status(404).json({
-      date: req.date,
-      status: "fail",
-      message: error.message,
-    });
-  }
-};
+    },
+    { $addFields: { gengre: "$_id" } }, //add field and asign the value of another field
+    { $project: { _id: 0 } }, // use to remove a field from the result set
+    { $sort: { movieCount: -1 } },
+    { $limit: 5 }, // to limit result
+    { $match: { gengre: reqGenre } },
+  ]);
+  requestResponse(req, resp, movies, next);
+  // resp.status(200).json({
+  //   date: req.date,
+  //   status: "succesful",
+  //   count: movies.length,
+  //   data: {
+  //     movies,
+  //   },
+  // });
+});

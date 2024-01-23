@@ -11,7 +11,7 @@ Dependences
   -dotenv - to read and include .env file in evn variables
   -mongoose - for Database operation
   -morgan - for logig
-  -Validator.js - for validation
+  -Validator.js - for validation (third party Validator lib)
 
 1 imported exress js
 
@@ -190,6 +190,15 @@ Schema Data Validators
   -enum for arrays
   -cust Validator
   -api - Validator.js
+
+implemented default route for all route not in the server;
+
+Error Handling 
+ - custom error class
+ - globale error controller
+ -try block function
+
+
 
 
 
