@@ -3,6 +3,7 @@ const express = require("express");
 const app = express();
 const morgan = require("morgan");
 const moviesRouter = require("./Routes/moviesRoutes");
+const globalErrorHandler = require("./Controllers/errorController");
 
 function dateLog(req, resp, next) {
   req.date = new Date().toLocaleString();
@@ -12,10 +13,24 @@ function dateLog(req, resp, next) {
 if (process.env.NODE_ENV == "development") {
   app.use(morgan("dev"));
 }
+console.log(process.env.NODE_ENV);
+
 app.use(express.json());
 app.use(dateLog);
 app.use(express.static("./public"));
 
 app.use("/api/v1/movies", moviesRouter);
+const ConstomError = require("./Utils/CustomError");
+
+//for all request that do not match existing urls
+app.all("*", (req, resp, next) => {
+  const customError = new ConstomError(
+    `Can't find ${req.originalUrl} on the server!`,
+    404
+  );
+  next(customError);
+});
+
+app.use(globalErrorHandler);
 
 module.exports = app;
