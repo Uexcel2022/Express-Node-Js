@@ -52,7 +52,7 @@ class ApiFeatures {
       this.query = this.query.skip(skip).limit(limit);
 
       if (skip >= this.count) {
-        throw new Error("This page is not found");
+        throw new Error("The page is not found");
       }
     }
     return this;

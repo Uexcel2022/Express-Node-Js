@@ -4,6 +4,8 @@ const app = express();
 const morgan = require("morgan");
 const moviesRouter = require("./Routes/moviesRoutes");
 const globalErrorHandler = require("./Controllers/errorController");
+const ConstomError = require("./Utils/CustomError");
+const authRouter = require("./Routes/authRouter");
 
 function dateLog(req, resp, next) {
   req.date = new Date().toLocaleString();
@@ -20,7 +22,7 @@ app.use(dateLog);
 app.use(express.static("./public"));
 
 app.use("/api/v1/movies", moviesRouter);
-const ConstomError = require("./Utils/CustomError");
+app.use("/api/v1/user", authRouter);
 
 //for all request that do not match existing urls
 app.all("*", (req, resp, next) => {

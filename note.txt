@@ -187,18 +187,28 @@ Schema Data Validators
   -required
   -max/minlength - string value
   -max/min - integer value
-  -enum for arrays
-  -cust Validator
-  -api - Validator.js
+  -enum for arrays - for validation
+  -custom Validator
+  -api - Validator - npm install validator
 
 implemented default route for all route not in the server;
 
 Error Handling 
  - custom error class
  - globale error controller
- -try block function
+ - try block function
+ -asyn error handler
+ making none operational operational
+ -invalid id exeption
+ -duplicate error
+ -validation error
+ -unhandledRejection
 
+--Not down testing yet
 
+USE MODEL
+-bcryptjs =>npm install bcryptjs
+-JWT = npm install jsonwebtoken
 
 
 

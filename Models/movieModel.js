@@ -6,17 +6,17 @@ const movieSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, "Name is required field!"],
+      required: [true, "Name is required field"],
       unique: true,
       trim: true,
-      minlength: [4, "Movie name must have at least 4 characters!"],
-      maxlength: [100, "Movie name must be 100 characters or below!"],
+      minlength: [4, "Movie name must have at least 4 characters"],
+      maxlength: [100, "Movie name must be 100 characters or below"],
       // validate: [Validator.isAlpha, "Movie name should contain only alphabets"],
     },
 
     description: {
       type: String,
-      required: [true, "Description is required field!"],
+      required: [true, "Description is required field"],
       trim: true,
     },
 
@@ -24,12 +24,12 @@ const movieSchema = new mongoose.Schema(
 
     duration: {
       type: Number,
-      required: [true, "Duration is required field!"],
+      required: [true, "Duration is required field"],
     },
     ratings: {
       type: Number,
-      // min: [1, "Movie ratings must be 1 or above!"],
-      // max: [10, "Movie rataings must be 10 or below!"],
+      // min: [1, "Movie ratings must be 1 or above"],
+      // max: [10, "Movie rataings must be 10 or below"],
 
       //custom validator.
       validate: {
@@ -44,7 +44,7 @@ const movieSchema = new mongoose.Schema(
     },
     releasedYear: {
       type: Number,
-      required: [true, "Released year is required field!"],
+      required: [true, "Released year is required field"],
     },
     releasedDate: {
       type: Date,
@@ -57,7 +57,7 @@ const movieSchema = new mongoose.Schema(
 
     genres: {
       type: [String],
-      required: [true, "Genres is required field!"],
+      required: [true, "Genres is required field"],
       enum: {
         values: [
           "Action",
@@ -75,19 +75,19 @@ const movieSchema = new mongoose.Schema(
     },
     directors: {
       type: [String],
-      required: [true, "Directors is required field!"],
+      required: [true, "Directors is required field"],
     },
     coverImage: {
       type: String,
-      required: [true, "Cover image is required field!"],
+      required: [true, "Cover image is required field"],
     },
     actors: {
       type: [String],
-      required: [true, "Actors is required field!"],
+      required: [true, "Actors is required field"],
     },
     price: {
       type: Number,
-      required: [true, "Price is required field!"],
+      required: [true, "Price is required field"],
       default: 1.0,
     },
     createdBy: {

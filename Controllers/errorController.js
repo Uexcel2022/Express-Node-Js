@@ -23,21 +23,40 @@ const prodErrors = (resp, error) => {
   }
 };
 
+const handleDuplicateMovieName = (error) => {
+  const msg = `There is already a movie with the name: ${error.keyValue.name}. Please choose another name.`;
+  return new customError(msg, 400);
+};
+
 const castErrorHandler = (error) => {
   const msg = `Invalid value: ${error.value} for ${error.path}`;
+  return new customError(msg, 400);
+};
+
+const validatorErrorHandler = (error) => {
+  const err = Object.values(error.errors).map((val) => val.message);
+  const msg = ` Invalid input data:  ${err.join(". ")}`;
   return new customError(msg, 400);
 };
 
 module.exports = (error, req, resp, next) => {
   (error.statusCode = error.statusCode || 500),
     (error.status = error.status || "error");
-
   if (process.env.NODE_ENV == "development") {
     devErrors(resp, error);
   } else if (process.env.NODE_ENV == "production") {
     if (error.name == "CastError") {
       error = castErrorHandler(error);
     }
+
+    if (error.code == 11000) {
+      error = handleDuplicateMovieName(error);
+    }
+
+    if ((error.name = "ValidatorError")) {
+      error = validatorErrorHandler(error);
+    }
+
     prodErrors(resp, error);
   }
 };
