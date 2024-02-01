@@ -3,6 +3,7 @@ const User = require("./../Models/userModel");
 const jwt = require("jsonwebtoken");
 const customError = require("./../Utils/CustomError");
 const util = require("util");
+const sendMail = require("./../Utils/email");
 
 const webtoken = (id) => {
   return jwt.sign({ id }, process.env.SECRET_STR, {
@@ -119,11 +120,43 @@ exports.restrict = (...roles) => {
   };
 };
 
-exports.sendPasswordResetToken = async (req, resp, next) => {
-  const user = User.findOne({ eamil: req.body.email });
+exports.sendPasswordResetToken = asyncErrorHandler(async (req, resp, next) => {
+  const user = await User.findOne({ email: req.body.email });
+
   if (!user) {
     return next(new customError("User not found", 404));
   }
   const passwordResetToken = await user.createPasswordResetToken();
-  console.log(passwordResetToken);
-};
+  await user.save({ validateBeforeSave: false });
+  const restUrl = `${req.protocol}://${req.get(
+    "host"
+  )}/api/vi/users/resetPassord/${passwordResetToken}`;
+
+  const message = `We have received your password reset request. Please use the link below to reset your password\n\n${restUrl}\n\n This link will expire in 10 minutes time `;
+
+  try {
+    await sendMail({
+      email: user.email,
+      subject: "Password Reset",
+      message: message,
+    });
+    resp.status(200).json({
+      status: "success",
+      message: "Password reset link has been sent to your email.",
+    });
+  } catch (error) {
+    user.passwordResetToken = undefined;
+    user.passwordChangedAt = undefined;
+    user.passwordResetTokenExpiresAt = undefined;
+    user.save({ validateBeforeSave: false });
+
+    next(
+      new customError(
+        "We encoutered error while sending password reset email. Please try again later",
+        500
+      )
+    );
+  }
+});
+
+exports.resetPassord = asyncErrorHandler(async (req, resp, next) => {});

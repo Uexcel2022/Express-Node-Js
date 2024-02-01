@@ -22,7 +22,7 @@ app.use(dateLog);
 app.use(express.static("./public"));
 
 app.use("/api/v1/movies", moviesRouter);
-app.use("/api/v1/user", authRouter);
+app.use("/api/v1/users", authRouter);
 
 //for all request that do not match existing urls
 app.all("*", (req, resp, next) => {
