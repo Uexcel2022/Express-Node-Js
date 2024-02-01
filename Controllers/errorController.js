@@ -39,22 +39,38 @@ const validatorErrorHandler = (error) => {
   return new customError(msg, 400);
 };
 
+const jsonWebTokenErrorHandler = () => {
+  return new customError("Invalid jwt, please login again", 401);
+};
+
+const tokenExpiredErrorHandler = () => {
+  return new customError("Jwt has expired, please login again", 401);
+};
+
 module.exports = (error, req, resp, next) => {
   (error.statusCode = error.statusCode || 500),
     (error.status = error.status || "error");
-  if (process.env.NODE_ENV == "development") {
+  if (process.env.NODE_ENV === "development") {
     devErrors(resp, error);
-  } else if (process.env.NODE_ENV == "production") {
-    if (error.name == "CastError") {
+  } else if (process.env.NODE_ENV === "production") {
+    if (error.name === "CastError") {
       error = castErrorHandler(error);
     }
 
-    if (error.code == 11000) {
+    if (error.code === 11000) {
       error = handleDuplicateMovieName(error);
     }
 
-    if ((error.name = "ValidatorError")) {
+    if (error.name == "ValidatorError") {
       error = validatorErrorHandler(error);
+    }
+
+    if (error.name === "JsonWebTokenError") {
+      error = jsonWebTokenErrorHandler();
+    }
+
+    if (error.name === "TokenExpiredError") {
+      error = tokenExpiredErrorHandler();
     }
 
     prodErrors(resp, error);

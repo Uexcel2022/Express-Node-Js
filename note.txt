@@ -4,6 +4,8 @@ Express js
 201 = created new object
 204 = delete
 400 = bad request
+401 = unauthorized
+403 = forbidden
 404 = not found
 500 = internal server error
 
@@ -209,6 +211,11 @@ Error Handling
 USE MODEL
 -bcryptjs =>npm install bcryptjs
 -JWT = npm install jsonwebtoken
+-promisify jwt.varify => require util libery
+-created evironment variable url in postman
+-programatically set jwt  - in the api >test>set evn variable
+-created role filtter middleware function
+-implemented password reset - require crypto (crypto.randomBytes) package to create passwordResetToken
 
 
 

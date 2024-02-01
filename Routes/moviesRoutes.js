@@ -1,5 +1,6 @@
 const express = require("express");
 const moviesController = require("./../Controllers/moviesController");
+const authController = require("./../Controllers/authController");
 
 //FIRST WAY
 
@@ -39,13 +40,21 @@ router
 
 router
   .route("/:id")
-  .get(moviesController.getMovieById)
-  .patch(moviesController.updateMovie)
-  .delete(moviesController.deleteMovie);
+  .get(authController.protect, moviesController.getMovieById)
+  .patch(
+    authController.protect,
+    authController.restrict("admin", "test1"), //multiple permission
+    moviesController.updateMovie
+  )
+  .delete(
+    authController.protect,
+    authController.restrict("admin", "test1"),
+    moviesController.deleteMovie
+  );
 
 router
   .route("/")
-  .get(moviesController.getAllMovie)
+  .get(authController.protect, moviesController.getAllMovie)
   .post(moviesController.addMovie);
 
 module.exports = router;
