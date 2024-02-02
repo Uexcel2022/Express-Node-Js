@@ -36,7 +36,6 @@ function requestResponse(req, resp, movie, next) {
 
 exports.getAllMovie = asyncErrorHandler(async (req, resp, next) => {
   const count = await Movie.countDocuments();
-
   const apiFeatures = new ApiFeatures(Movie.find(), req.query, count)
     .sortUrl()
     .sortResultSet()

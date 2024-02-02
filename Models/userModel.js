@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const bycryt = require("bcryptjs");
 const crypto = require("crypto");
+const localDate = require("./../Utils/locatDate");
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -68,7 +69,7 @@ userSchema.methods.confirmUserPassword = async function (psw, pswDB) {
 
 userSchema.methods.compareTimeStamps = async function (pswTs, tokenTs) {
   const pswTsMilscs = parseInt(pswTs.getTime() / 1000, 10);
-  return pswTsMilscs < tokenTs;
+  return pswTsMilscs < tokenTs; //parseInt(tokenTs + 60 * 1000); //because time is in local time
 };
 
 userSchema.methods.createPasswordResetToken = function () {
@@ -78,8 +79,8 @@ userSchema.methods.createPasswordResetToken = function () {
     .update(resetToken)
     .digest("hex");
 
-  (this.passwordChangedAt = Date.now()),
-    (this.passwordResetTokenExpiresAt = Date.now() + 10 * 60 * 1000);
+  this.passwordResetTokenExpiresAt =
+    localDate.date().getTime() + 10 * 60 * 1000;
 
   return resetToken;
 };

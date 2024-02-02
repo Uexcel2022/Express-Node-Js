@@ -4,18 +4,25 @@ const jwt = require("jsonwebtoken");
 const customError = require("./../Utils/CustomError");
 const util = require("util");
 const sendMail = require("./../Utils/email");
+const CustomError = require("./../Utils/CustomError");
+const crypto = require("crypto");
+const localDate = require("./../Utils/locatDate");
 
+//create token
 const webtoken = (id) => {
-  return jwt.sign({ id }, process.env.SECRET_STR, {
-    expiresIn: process.env.TOKEN_EXPIRES,
-  });
+  return jwt.sign(
+    { id, iat: parseInt(localDate.date().getTime() / 1000, 10) },
+    process.env.SECRET_STR,
+    {
+      expiresIn: process.env.TOKEN_EXPIRES,
+    }
+  );
 };
 
 exports.signup = asyncErrorHandler(async (req, resp, next) => {
   const newUser = await User.create(req.body);
 
   const token = webtoken(newUser._id);
-
   resp.status(201).json({
     status: "success",
     token,
@@ -147,7 +154,6 @@ exports.sendPasswordResetToken = asyncErrorHandler(async (req, resp, next) => {
   } catch (error) {
     user.passwordResetToken = undefined;
     user.passwordChangedAt = undefined;
-    user.passwordResetTokenExpiresAt = undefined;
     user.save({ validateBeforeSave: false });
 
     next(
@@ -159,4 +165,29 @@ exports.sendPasswordResetToken = asyncErrorHandler(async (req, resp, next) => {
   }
 });
 
-exports.resetPassord = asyncErrorHandler(async (req, resp, next) => {});
+exports.resetPassord = asyncErrorHandler(async (req, resp, next) => {
+  const inComingToken = req.params.token.trim();
+  console.log(inComingToken);
+  const token = crypto.createHash("sha256").update(inComingToken).digest("hex");
+
+  const user = await User.findOne({
+    passwordResetToken: token,
+    passwordResetTokenExpiresAt: { $gt: localDate.date() },
+  });
+
+  if (!user) {
+    return next(new CustomError("The token is invalid or has expired", 400));
+  }
+  user.password = req.body.password;
+  user.confirmPassword = req.body.confirmPassword;
+  user.passwordResetToken = undefined;
+  user.passwordResetTokenExpiresAt = undefined;
+  user.passwordChangedAt = localDate.date();
+  user.save();
+
+  const loginToken = webtoken(user._id);
+  resp.status(200).json({
+    status: "success",
+    token: loginToken,
+  });
+});
