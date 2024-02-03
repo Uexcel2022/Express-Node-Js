@@ -19,7 +19,7 @@ const webtoken = (id) => {
   );
 };
 
-const response = (user, statusCode, resp) => {
+exports.response = (user, statusCode, resp) => {
   const token = webtoken(user._id);
   resp.status(statusCode).json({
     status: "success",
@@ -32,7 +32,7 @@ const response = (user, statusCode, resp) => {
 
 const sentToken = (user, statusCode, resp) => {
   const token = webtoken(user._id);
-  resp.status(200).json({
+  resp.status(statusCode).json({
     status: "success",
     token,
   });
@@ -40,7 +40,7 @@ const sentToken = (user, statusCode, resp) => {
 
 exports.signup = asyncErrorHandler(async (req, resp) => {
   const newUser = await User.create(req.body);
-  response(newUser, 201, resp);
+  this.response(newUser, 201, resp);
 });
 
 exports.login = asyncErrorHandler(async (req, resp, next) => {
@@ -201,30 +201,4 @@ exports.resetPassord = asyncErrorHandler(async (req, resp, next) => {
 
   //SEND RESPONSE
   sentToken(user, 200, resp);
-});
-
-exports.updatePassword = asyncErrorHandler(async (req, resp, next) => {
-  //CHECK USER EXIST IN THE DB
-  const user = await User.findById(req.user._id).select("+password");
-  //VERIFY THE CURRENT PASSWORD IS CORRECT
-  const currentPassword = req.body.currentPassword;
-  console.log(user);
-  if (
-    !user ||
-    !(await user.confirmUserPassword(currentPassword, user.password))
-  ) {
-    return next(
-      new CustomError("The current password you provided is wrong", 400)
-    );
-  }
-  //UPDATE PASSWORD IF THE CURRENT PASSWORD IS CORRECT
-  user.password = req.body.password;
-  user.confirmPassword = req.body.confirmPassword;
-  user.passwordChangedAt = localDate.date();
-  await user.save();
-
-  const ur = await User.findById(user._id);
-
-  //LOGIN USER SEND JWT
-  response(ur, 200, resp);
 });

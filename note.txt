@@ -216,7 +216,11 @@ USE MODEL
 -programatically set jwt  - in the api >test>set evn variable
 -created role filtter middleware function
 -implemented password reset - require crypto (crypto.randomBytes) package to create passwordResetToken
--send mail > 
+-send mail > for password reset
+-reset and update password
+-delete user
+-find all user whose account are activate.
+
 
 
 
