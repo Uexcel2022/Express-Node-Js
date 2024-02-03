@@ -234,3 +234,6 @@ The query execution took 226 milliseconds
 The query execution took 439 milliseconds
 The query execution took 496 milliseconds
 The query execution took 1231 milliseconds
+The query execution took 205 milliseconds
+The query execution took 224 milliseconds
+The query execution took 162 milliseconds
